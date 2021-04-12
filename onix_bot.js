@@ -8,10 +8,10 @@ const bot = new Discord.Client();
 bot.on("ready", () => {
         console.log(`Logged in as ${bot.user.tag}`);
 
-        const guild = bot.guilds.cache.get(config.test_id); //cuties
-        const general_text = bot.channels.cache.get(config.test_id); //general
+        const guild = bot.guilds.cache.get(config.cutie_squad_id); //cuties
+        const general_text = bot.channels.cache.get(config.cuties_sqad_general_id); //general
 
-        fs.watchFile('/home/onix/current', () => {
+        fs.watchFile('/home/deploy/avocado/current', () => {
                 try {
                         general_text.send("**Iečekojiet jauno apdeitu** https://www.onixtsm.org");
                 } catch (error) {
