@@ -13,7 +13,11 @@ bot.on("ready", async () => {
         console.log(`Logged in as ${bot.user.tag}`)
 
 
+        bot.user.setActivity(`${prefix}help`, {type: 'LISTENING'})
 
+
+
+        const guilds = bot.guilds.cache
 
         // Import commands
         const baseFile = 'Icommand.js'
@@ -33,23 +37,21 @@ bot.on("ready", async () => {
                 }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         readCommands('commands')
-
         helpListener(bot)
-
-
-
-
-
-        bot.user.setActivity(`${prefix}help`, {type: 'LISTENING'})
-
-
-
-
-
-
-        const guilds = bot.guilds.cache
-
         updateWatcher(guilds)
 
 })

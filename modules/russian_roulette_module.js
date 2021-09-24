@@ -12,11 +12,9 @@ shuffle = () => {
                 const j = Math.floor(Math.random() * (i + 1));
                 [barrel[i], barrel[j]] = [barrel[j], barrel[i]];
         }
-        console.log(barrel)
 }
 
 shot = () => {
-        console.log(bullet)
         if (bullet < 1 || !bullet) {
                 return -1
         }
