@@ -1,5 +1,5 @@
 const fs = require('fs')
-const {names, update_phrase} = require('./settings.json')
+const {names, update_phrase} = require('../settings.json')
 
 
 updateWatcher = (guilds) => {

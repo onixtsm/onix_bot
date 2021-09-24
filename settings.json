@@ -9,5 +9,44 @@
                 "simts gadi nepagāja kā ir kaut kas jauns",
                 "cerēsim, ka tas nav tikai kārtējais bug fix",
                 "skatīsimies kopā"
+        ],
+        "prefix": "--",
+        "shuffled": [
+                "Iegrizts!",
+                "Varam spēlēt",
+                "Pilnīga nejaušība",
+                "Varbūtība viens uz seši",
+                "Gatavi riskēt?",
+                "Nu ko, spēlējam?"
+        ],
+        "forgot_to_shuffle": [
+                "Iegriez veltni!",
+                "Sākumā iegriez veltni!",
+                "Nav godīgi! Sākumā iegriz veltni",
+                "Tu gadījumā neaizmirsi iegriezt veltni??",
+                "Veltnis vēl nav iegriezts..."
+        ],
+        "he_died": [
+                "Nepaveicās...",
+                "Tauta, mums ir zaudētājs",
+                "Viņš krita goda nāvē",
+                "Toties mēs zinām, ka viņš spēlēja godīgi",
+                ":smiley: :gun:"
+        ],
+        "you_died": [
+                "Tu nomiri",
+                "Lido debesīs",
+                "Puff",
+                "Dodamies 2 metrus zem zemes",
+                "Par tevi neraudās",
+                "Nāve ir tikai sākums",
+                "Tu kriti ar cieņu"
+        ],
+        "lucky": [
+                "Paveicās!",
+                "Vēl dzīvosi",
+                "Ne šo reizi",
+                "Šis izdzīvoja, kurš nākamais?",
+                "Laimes kreklā dzimis"
         ]
 }
