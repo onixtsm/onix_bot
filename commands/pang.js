@@ -1,7 +1,6 @@
 module.exports = {
-        commands: ['pang'],
+        commands: ['pang', 'pa'],
         description: "Pang command",
-        callable: false,
         hidden: true,
         callback: (message) => {
                 message.reply('pong')

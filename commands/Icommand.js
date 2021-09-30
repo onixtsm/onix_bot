@@ -1,6 +1,37 @@
-const {prefix} = require('../settings.json')
+module.exports = {
+      
+        commands: [],
+        description: '',
+        usage: '',
+        expectedArgs: '',
+        permissionError: 'Tev nav tiesību šo darīt',
+        minArgs: 0,
+        maxArgs: null,
+        permissions: [],
+        requiredRoles: [],
+        hidden: false,
+        callable: true,
+        callback: () => {},
 
 
+        validate:(options) => {
+                // Make string into arrays
+                if (typeof options.commands === 'string') {
+                        options.commands = [options.commands]
+                }
+
+                // Validate permissions
+                if (options.permissions.length) {
+                        if (typeof options.permissions === 'string') {
+                                options.permissions = [options.permissions]
+                        }
+
+                        validatePermissions(options.permissions)
+                }
+        }
+
+        
+}
 
 const validatePermissions = (permissions) => {
         const validPermission = [
@@ -50,88 +81,3 @@ const validatePermissions = (permissions) => {
         }
 }
 
-
-
-module.exports = (bot, commandOptions) => {
-        let {
-                commands,
-                description = '',
-                expectedArgs = '',
-                permissionError = 'Tev nav tiesību šo darīt',
-                minArgs = 0,
-                maxArgs = null,
-                permissions = [],
-                requiredRoles = [],
-                hidden = false,
-                callable = true,
-                callback
-
-        } = commandOptions
-
-
-        
-
-        // Make string into arrays
-        if (typeof commands === 'string') {
-                commands = [commands]
-        }
-
-        // Validate permissions
-        if (permissions.length) {
-                if (typeof permissions === 'string') {
-                        permissions = [permissions]
-                }
-
-                validatePermissions(permissions)
-        }
-        var error = 0
-
-        bot.on('message', (message) => {
-                const {member, content, guild} = message
-
-                for (const alias of commands) {
-                        if (content.toLowerCase().startsWith(`${prefix}${alias.toLowerCase()}`)) {
-
-                                if (!callable) {
-                                        console.log(`${alias} is not callable`)
-                                        return
-                                }
-
-
-
-                                for (const permission of permissions) {
-                                        if (!member.hasPermission(permission)) {
-                                                message.reply(permissionError)
-                                                error = 1
-                                                return
-                                        }
-                                }
-
-                                for (const requiredRole of requiredRoles) {
-                                        const role = guild.roles.cache.find(role => role.name === requiredRole)
-
-                                        if (!role || !member.roles.cache.has(role.id)) {
-                                                message.reply(`Tev jābūt šim rolam ${requiredRole}`)
-                                                error = 2
-                                                return
-                                        }
-                                }
-
-                                const arguments = content.split(/[ ]+/)
-                                arguments.shift()
-
-                                if (arguments.length < minArgs || (
-                                        maxArgs !== null && arguments.length > maxArgs
-                                )) {
-                                        message.reply(`Nepareiza sintakse! Lieto ${prefix}${alias} ${expectedArgs}`)
-                                        error = 3
-
-                                }
-
-
-                                callback(message, arguments, arguments.join(' '))
-                                return
-                        }
-                }
-        })
-}

@@ -4,8 +4,10 @@ const path = require('path')
 
 const config = require('./config.json')
 const {prefix} = require('./settings.json')
+
+const listenerInstance = require('./modules/message_listener_module')
+
 const {updateWatcher} = require('./modules/website_update_module.js')
-const {helpListener, getDescription} = require('./help')
 
 const bot = new Discord.Client()
 
@@ -21,37 +23,38 @@ bot.on("ready", async () => {
 
         // Import commands
         const baseFile = 'Icommand.js'
-        const commandBase = require(`./commands/${baseFile}`)
+        const defaultOption = require(`./commands/${baseFile}`)
+
+
+        listenerInstance.messageListener(bot)
 
         const readCommands = (dir) => {
                 const files = fs.readdirSync(path.join(__dirname, dir))
                 for (const file of files) {
+                        if (file.name === baseFile) {
+                                continue
+                        }
                         const stat = fs.lstatSync(path.join(__dirname, dir, file))
                         if (stat.isDirectory()) {
                                 readCommands(path.join(dir, file))
                         } else if (file !== baseFile) {
-                                const option = require(path.join(__dirname, dir, file))
-                                getDescription(option)
-                                commandBase(bot, option)
+                                let option = {...defaultOption, ...require(path.join(__dirname, dir, file))}
+                                defaultOption.validate(option)
+                                delete option.validate
+
+                                listenerInstance.addCommand(option)
+
+
                         }
                 }
+
         }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
         readCommands('commands')
-        helpListener(bot)
+        //helpListener(bot)
         updateWatcher(guilds)
 
 })
