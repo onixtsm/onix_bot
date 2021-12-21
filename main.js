@@ -1,32 +1,32 @@
-const Discord = require('discord.js')
+const {Client, Intents } = require('discord.js')
 const fs = require('fs')
 const path = require('path')
 
 const config = require('./config.json')
 const {prefix} = require('./settings.json')
 
-const listenerInstance = require('./modules/message_listener_module')
+const listenerInstance = require('./modules/message_listener_module.js')
 
 const {updateWatcher} = require('./modules/website_update_module.js')
 
-const bot = new Discord.Client()
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]})
 
-bot.on("ready", async () => {
-        console.log(`Logged in as ${bot.user.tag}`)
-
-
-        bot.user.setActivity(`${prefix}help`, {type: 'LISTENING'})
+client.on("ready", async () => {
+        console.log(`Logged in as ${client.user.tag}`)
 
 
+        client.user.setActivity(`${prefix}help`, {type: 'LISTENING'})
 
-        const guilds = bot.guilds.cache
+
+
+        const guilds = client.guilds.cache
 
         // Import commands
         const baseFile = 'Icommand.js'
         const defaultOption = require(`./commands/${baseFile}`)
 
 
-        listenerInstance.messageListener(bot)
+        listenerInstance.messageListener(client)
 
         const readCommands = (dir) => {
                 const files = fs.readdirSync(path.join(__dirname, dir))
@@ -54,7 +54,7 @@ bot.on("ready", async () => {
 
 
         readCommands('commands')
-        //helpListener(bot)
+        //helpListener(client)
         updateWatcher(guilds)
 
 })
@@ -62,5 +62,5 @@ bot.on("ready", async () => {
 
 
 
-bot.login(config.token)
+client.login(config.token)
 
