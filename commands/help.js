@@ -4,8 +4,7 @@
 //
 
 const {prefix} = require('../settings.json')
-const {listenerInstance} = require('../modules/message_listener_module')
-const {getCommands} = require('../modules/message_listener_module')
+const {getCommands} = require('../modules/messageListener_module')
 
 module.exports = {
         commands: ['help', 'h'],

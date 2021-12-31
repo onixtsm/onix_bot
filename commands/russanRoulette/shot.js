@@ -1,4 +1,4 @@
-const {shot} = require('../../modules/russian_roulette_module')
+const {shot} = require('../../modules/russianRoulette_module')
 const {forgot_to_shuffle, he_died, you_died, lucky} = require('../../settings.json')
 
 let daringOnes = {}

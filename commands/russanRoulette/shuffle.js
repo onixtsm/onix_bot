@@ -1,4 +1,4 @@
-const {shuffle} = require('../../modules/russian_roulette_module')
+const {shuffle} = require('../../modules/russianRoulette_module')
 const {shuffled} = require('../../settings.json')
 
 module.exports = {
