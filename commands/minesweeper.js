@@ -10,6 +10,7 @@ module.exports = {
   callback: (message, args) => {
     // Levels: [side, mineCount]
     const levels = {
+      // t: [4, 1],
       beginner: [9, 10],
       medium: [16, 40],
       hard: [24, 99],

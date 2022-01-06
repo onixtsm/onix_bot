@@ -104,6 +104,7 @@ const ButtonHandler = (interaction) => {
   direction = interaction.customId.split('-', 2)[1]
 
   const size = game.field.length - 1
+  let moves = 0
   switch (direction) {
     case 'up':
       do {
@@ -112,7 +113,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.y -= 1
         }
-      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
+      } while (
+        !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
+        moves === side
+      )
       break
 
     case 'down':
@@ -122,7 +126,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.y += 1
         }
-      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
+      } while (
+        !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
+        moves === side
+      )
       break
 
     case 'left':
@@ -132,7 +139,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.x -= 1
         }
-      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
+      } while (
+        !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
+        moves === side
+      )
       break
 
     case 'right':
@@ -142,7 +152,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.x += 1
         }
-      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
+      } while (
+        !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
+        moves === side
+      )
       break
 
     case 'flag':
@@ -164,9 +177,14 @@ const ButtonHandler = (interaction) => {
         game.field[game.cursor.y][game.cursor.x].FLAGGED = false
         game.flagCount--
       }
+      game.field[game.cursor.y][game.cursor.x].HIDDEN = false
+      if (game.field[game.cursor.y][game.cursor.x].MINE) {
+        game.lost = true
+        break
+      }
+      game.opened++
 
       show(game.cursor.x, game.cursor.y)
-      game.opened++
       break
   }
   nextStep(game)
@@ -174,12 +192,10 @@ const ButtonHandler = (interaction) => {
 
 const show = (x, y) => {
   game.field[y][x].HIDDEN = false
-
   if (game.field[y][x].MINE) {
     game.lost = true
     return
   }
-
   side = game.field.length
 
   if (game.field[y][x].NUMBER === 0) {
