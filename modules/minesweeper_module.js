@@ -1,9 +1,6 @@
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
 
-// TODO: get rid of globals and so be able to play multiple games
-// TODO: Make window which shows actions
-
-let playerTable ={}
+let playerTable = {}
 
 let IField = () => {
   return {
@@ -26,7 +23,7 @@ const Play = async (level, message) => {
     opened: 0,
     lost: false,
     flagCount: 0,
-    mineCount: level[1]
+    mineCount: level[1],
   }
 
   const template = {
@@ -109,35 +106,43 @@ const ButtonHandler = (interaction) => {
   const size = game.field.length - 1
   switch (direction) {
     case 'up':
-      if (game.cursor.y === 0) {
-        game.cursor.y = size
-      } else {
-        game.cursor.y -= 1
-      }
+      do {
+        if (game.cursor.y === 0) {
+          game.cursor.y = size
+        } else {
+          game.cursor.y -= 1
+        }
+      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
       break
 
     case 'down':
-      if (game.cursor.y === size) {
-        game.cursor.y = 0
-      } else {
-        game.cursor.y += 1
-      }
+      do {
+        if (game.cursor.y === size) {
+          game.cursor.y = 0
+        } else {
+          game.cursor.y += 1
+        }
+      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
       break
 
     case 'left':
-      if (game.cursor.x === 0) {
-        game.cursor.x = size
-      } else {
-        game.cursor.x -= 1
-      }
+      do {
+        if (game.cursor.x === 0) {
+          game.cursor.x = size
+        } else {
+          game.cursor.x -= 1
+        }
+      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
       break
 
     case 'right':
-      if (game.cursor.x === size) {
-        game.cursor.x = 0
-      } else {
-        game.cursor.x += 1
-      }
+      do {
+        if (game.cursor.x === size) {
+          game.cursor.x = 0
+        } else {
+          game.cursor.x += 1
+        }
+      } while (!game.field[game.cursor.y][game.cursor.x].HIDDEN)
       break
 
     case 'flag':
@@ -145,7 +150,7 @@ const ButtonHandler = (interaction) => {
       let y = game.cursor.y
       if (game.field[y][x].FLAGGED) {
         game.field[y][x].FLAGGED = false
-        game.flagCount-- 
+        game.flagCount--
       } else {
         if (game.flagCount < game.mineCount && game.field[y][x].HIDDEN) {
           game.field[y][x].FLAGGED = true
@@ -201,8 +206,7 @@ const show = (x, y) => {
 }
 
 const printField = async (game) => {
-
-  ({ field, lost, mineCount, opened, cursor, flagCount } = game)
+  ;({ field, lost, mineCount, opened, cursor, flagCount } = game)
   let output = '```\n'
 
   for (let i = 0; i < field.length; i++) {
@@ -227,19 +231,39 @@ const printField = async (game) => {
   const controls = new MessageActionRow()
   const actions = new MessageActionRow()
   let template = { components: [] }
+  let actionField = {}
   if (field.length * field.length - mineCount === opened) {
-    fieldEmbed
-      .setTitle('WIN')
-      .addField(`Flags used ${flagCount}/${mineCount}`, output, false)
+    fieldEmbed.setTitle('WIN').setColor('00ff00')
+    actionField = {
+      name: '\u200b',
+      value: 'Result\nYou won',
+      inline: true,
+    }
   } else if (lost) {
-    fieldEmbed
-      .setTitle('LOST')
-      .addField(`Flags used ${flagCount}/${mineCount}`, output, false)
-  } else {
-    fieldEmbed
-      .setTitle('MINESWEEPER')
-      .addField(`Flags used ${flagCount}/${mineCount}`, output, false)
+    fieldEmbed.setTitle('LOST').setColor('ff0000')
 
+    actionField = {
+      name: '\u200b',
+      value: 'Result:\nYou lost',
+      inline: true,
+    }
+  } else {
+    fieldEmbed.setTitle('MINESWEEPER').setColor('edd0b1')
+
+    let cursorCell = field[cursor.y][cursor.x]
+    let value
+    if (!cursorCell.HIDDEN) {
+      value = cursorCell.NUMBER
+    } else if (cursorCell.FLAGGED) {
+      value = '?'
+    } else {
+      value = '.'
+    }
+    actionField = {
+      name: `\u200b`,
+      value: `Value under cursor:\n${value}`,
+      inline: true,
+    }
     controls
       .addComponents(
         new MessageButton()
@@ -280,11 +304,21 @@ const printField = async (game) => {
       )
     template.components = [controls, actions]
   }
+  fieldEmbed.addFields(
+    {
+      name: `Flags used ${flagCount}/${mineCount}`,
+      value: output,
+      inline: true,
+    },
+    actionField
+  )
 
   template.content = '\u200b'
   template.embeds = [fieldEmbed]
 
-  await game.fieldMessage.edit(template).then((edited) => (game.fieldMessage = edited))
+  await game.fieldMessage
+    .edit(template)
+    .then((edited) => (game.fieldMessage = edited))
 }
 
 module.exports = {
