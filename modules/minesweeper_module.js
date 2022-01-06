@@ -3,13 +3,7 @@ const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
 // TODO: get rid of globals and so be able to play multiple games
 // TODO: Make window which shows actions
 
-let game = {}
-let fieldMessage
-let player_id
-let mineCount
-let flagCount
-let opened
-let lost = false
+let playerTable ={}
 
 let IField = () => {
   return {
@@ -22,25 +16,25 @@ let IField = () => {
 
 // Main
 const Play = async (level, message) => {
-  lost = false
-  player_id = message.author.id
-  flagCount = 0
-  opened = 0
-  game = {
+  id = message.author.id
+  playerTable[id] = {
     field: generate(level),
     cursor: {
       x: Math.floor(level[0] / 2),
       y: Math.floor(level[0] / 2),
     },
+    opened: 0,
+    lost: false,
+    flagCount: 0,
+    mineCount: level[1]
   }
 
   const template = {
     content: 'loading field...',
   }
-
-  fieldMessage = await message.channel.send(template)
-
-  await nextStep()
+  playerTable[id]['fieldMessage'] = await message.channel.send(template)
+  // game['fieldMessage'] = await message.channel.send(template)
+  await nextStep(playerTable[id])
 }
 
 let fill = (f) => {
@@ -54,8 +48,8 @@ let fill = (f) => {
 }
 
 const generate = (level) => {
-  mineCount = level[1]
   let side = level[0]
+  let mineCount = level[1]
   let field = Array.from(Array(side), () => new Array(side))
 
   field = fill(field)
@@ -96,9 +90,9 @@ const generate = (level) => {
   return field
 }
 
-const nextStep = async () => {
-  await printField()
-  if (lost) {
+const nextStep = async (game) => {
+  await printField(game)
+  if (game.lost) {
     return
   }
 }
@@ -106,7 +100,9 @@ const nextStep = async () => {
 const ButtonHandler = (interaction) => {
   interaction.deferUpdate()
 
-  if (interaction.user.id !== player_id) return
+  if (!(interaction.user.id in playerTable)) return
+
+  game = playerTable[interaction.user.id]
 
   direction = interaction.customId.split('-', 2)[1]
 
@@ -149,11 +145,11 @@ const ButtonHandler = (interaction) => {
       let y = game.cursor.y
       if (game.field[y][x].FLAGGED) {
         game.field[y][x].FLAGGED = false
-        flagCount -= 1
+        game.flagCount-- 
       } else {
-        if (flagCount < mineCount && game.field[y][x].HIDDEN) {
+        if (game.flagCount < game.mineCount && game.field[y][x].HIDDEN) {
           game.field[y][x].FLAGGED = true
-          flagCount++
+          game.flagCount++
         }
       }
       break
@@ -161,22 +157,21 @@ const ButtonHandler = (interaction) => {
     case 'show':
       if (game.field[game.cursor.y][game.cursor.x].FLAGGED) {
         game.field[game.cursor.y][game.cursor.x].FLAGGED = false
-        flagCount--
+        game.flagCount--
       }
 
       show(game.cursor.x, game.cursor.y)
-      opened++
+      game.opened++
       break
   }
-  nextStep()
+  nextStep(game)
 }
 
 const show = (x, y) => {
   game.field[y][x].HIDDEN = false
 
   if (game.field[y][x].MINE) {
-    console.log('Lost set to true')
-    lost = true
+    game.lost = true
     return
   }
 
@@ -191,7 +186,7 @@ const show = (x, y) => {
           if (0 <= xi && xi < side && 0 <= yj && yj < side) {
             if (!game.field[yj][xi].FLAGGED) {
               if (game.field[yj][xi].HIDDEN) {
-                opened++
+                game.opened++
                 if (game.field[yj][xi].NUMBER === 0) {
                   show(xi, yj)
                 }
@@ -205,16 +200,16 @@ const show = (x, y) => {
   }
 }
 
-const printField = async () => {
-  const field = game.field
+const printField = async (game) => {
 
+  ({ field, lost, mineCount, opened, cursor, flagCount } = game)
   let output = '```\n'
 
   for (let i = 0; i < field.length; i++) {
     for (let j = 0; j < field.length; j++) {
       if (lost && field[i][j].MINE) {
         output += '*'
-      } else if (j == game.cursor.x && i == game.cursor.y) {
+      } else if (j == cursor.x && i == cursor.y) {
         output += '+'
       } else if (field[i][j].FLAGGED) {
         output += '?'
@@ -289,8 +284,7 @@ const printField = async () => {
   template.content = '\u200b'
   template.embeds = [fieldEmbed]
 
-  await fieldMessage.edit(template).then((edited) => (fieldMessage = edited))
-  console.log(fieldMessage)
+  await game.fieldMessage.edit(template).then((edited) => (game.fieldMessage = edited))
 }
 
 module.exports = {

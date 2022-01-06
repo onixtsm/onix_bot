@@ -8,13 +8,11 @@ module.exports = {
   description: 'Saprieris Diskordā',
 
   callback: (message, args) => {
-
-    
     // Levels: [side, mineCount]
     const levels = {
-      "beginner": [9, 10],
-      "medium": [16, 40],
-      "hard": [24, 99]
+      beginner: [9, 10],
+      medium: [16, 40],
+      hard: [24, 99],
     }
 
     let level = levels?.[args]
@@ -25,13 +23,6 @@ module.exports = {
 
     Minesweeper.Play(level, message)
 
-     
-
-
-
     //message.channel.send({ embeds: [exampleEmbed] });
-    
-
-
-  }
+  },
 }
