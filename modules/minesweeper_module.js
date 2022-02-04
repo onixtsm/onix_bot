@@ -1,4 +1,5 @@
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
+//FIXME: moves to wrong direction 
 
 let playerTable = {}
 
@@ -105,6 +106,7 @@ const ButtonHandler = (interaction) => {
 
   const size = game.field.length - 1
   let moves = 0
+
   switch (direction) {
     case 'up':
       do {
@@ -113,9 +115,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.y -= 1
         }
+        moves++
       } while (
         !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
-        moves === side
+        moves !== size
       )
       break
 
@@ -126,9 +129,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.y += 1
         }
+        moves++
       } while (
         !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
-        moves === side
+        moves !== size
       )
       break
 
@@ -139,9 +143,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.x -= 1
         }
+        moves++
       } while (
         !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
-        moves === side
+        moves !== size
       )
       break
 
@@ -152,9 +157,10 @@ const ButtonHandler = (interaction) => {
         } else {
           game.cursor.x += 1
         }
+        moves++
       } while (
         !game.field[game.cursor.y][game.cursor.x].HIDDEN &&
-        moves === side
+        moves !== size
       )
       break
 
